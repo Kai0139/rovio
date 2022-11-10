@@ -182,6 +182,9 @@ class RovioNode{
   std::string world_frame_;
   std::string camera_frame_;
   std::string imu_frame_;
+  std::string cam0_topic;
+  std::string cam1_topic;
+  std::string imu0_topic;
 
   /** \brief Constructor
    */
@@ -205,9 +208,15 @@ class RovioNode{
     gotFirstMessages_ = false;
 
     // Subscribe topics
-    subImu_ = nh_.subscribe("imu0", 1000, &RovioNode::imuCallback,this);
-    subImg0_ = nh_.subscribe("cam0/image_raw", 1000, &RovioNode::imgCallback0,this);
-    subImg1_ = nh_.subscribe("cam1/image_raw", 1000, &RovioNode::imgCallback1,this);
+    cam0_topic = "cam0/image_raw";
+    nh_private_.param("cam0_topic", cam0_topic, cam0_topic);
+    cam1_topic = "cam1/image_raw";
+    nh_private_.param("cam0_topic", cam1_topic, cam0_topic);
+    imu0_topic = "imu0";
+    nh_private_.param("imu0_topic", imu0_topic, imu0_topic);
+    subImu_ = nh_.subscribe(imu0_topic, 1000, &RovioNode::imuCallback,this);
+    subImg0_ = nh_.subscribe(cam0_topic, 1000, &RovioNode::imgCallback0,this);
+    subImg1_ = nh_.subscribe(cam1_topic, 1000, &RovioNode::imgCallback1,this);
     subGroundtruth_ = nh_.subscribe("pose", 1000, &RovioNode::groundtruthCallback,this);
     subGroundtruthOdometry_ = nh_.subscribe("odometry", 1000, &RovioNode::groundtruthOdometryCallback, this);
     subVelocity_ = nh_.subscribe("abss/twist", 1000, &RovioNode::velocityCallback,this);
@@ -497,9 +506,11 @@ class RovioNode{
    */
   void imgCallback(const sensor_msgs::ImageConstPtr & img, const int camID = 0){
     // Get image from msg
-    cv_bridge::CvImagePtr cv_ptr;
+    cv_bridge::CvImagePtr cv_rgb_ptr, cv_ptr;
     try {
-      cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::TYPE_8UC1);
+      cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::TYPE_8UC3);
+      // cv_rgb_ptr = cv_bridge::toCvCopy(img, img->encoding);
+      // cv_ptr = cv_bridge::cvtColor(cv_rgb_ptr, "mono8");
     } catch (cv_bridge::Exception& e) {
       ROS_ERROR("cv_bridge exception: %s", e.what());
       return;
