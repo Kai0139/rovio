@@ -2,9 +2,9 @@
 
 <launch>
   <node pkg="rovio" type="rovio_node" name="rovio" output="screen">
-    <param name="filter_config" value="$(find rovio)/cfg/realsense_d455.info"/>
-    <param name="camera0_config" value="$(find rovio)/cfg/realsense_d455_cam.yaml"/>
-    <param name="cam0_topic"   value="/camera/color/image_raw" />
+    <param name="filter_config" value="$(find rovio)/cfg/realsense_t265.info"/>
+    <param name="camera0_config" value="$(find rovio)/cfg/realsense_t265_cam.yaml"/>
+    <param name="cam0_topic"   value="/camera/fisheye1/image_raw" />
     <param name="imu0_topic"   value="/camera/imu" />
   </node>
 </launch>

@@ -125,7 +125,13 @@ class FeatureTrackerNode{
     pyr_.computeFromImage(img_,true);
 
     // Drawing
-    cvtColor(img_, draw_image_, cv::COLOR_BGR2GRAY);
+    try{
+      cvtColor(img_, draw_image_, cv::COLOR_BGR2GRAY);
+    } catch (cv::Exception& cve){
+      ROS_ERROR("FeatureTracker: cv_bridge exception: %s", cve.what());
+      return;
+    }
+    
     const int numPatchesPlot = 10;
     draw_patches_ = cv::Mat::zeros(numPatchesPlot*(patchSize_*pow(2,nLevels_-1)+4),3*(patchSize_*pow(2,nLevels_-1)+4),CV_8UC1);
 

@@ -506,13 +506,18 @@ class RovioNode{
    */
   void imgCallback(const sensor_msgs::ImageConstPtr & img, const int camID = 0){
     // Get image from msg
-    cv_bridge::CvImagePtr cv_rgb_ptr, cv_ptr;
+    // cv_bridge::CvImagePtr cv_rgb_ptr, cv_ptr;
+    cv_bridge::CvImagePtr cv_ptr;
     try {
-      cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::TYPE_8UC3);
+      cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::TYPE_8UC1);
+      // cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
       // cv_rgb_ptr = cv_bridge::toCvCopy(img, img->encoding);
       // cv_ptr = cv_bridge::cvtColor(cv_rgb_ptr, "mono8");
     } catch (cv_bridge::Exception& e) {
       ROS_ERROR("cv_bridge exception: %s", e.what());
+      return;
+    } catch (cv::Exception& cve){
+      ROS_ERROR("cv_bridge exception: %s", cve.what());
       return;
     }
     cv::Mat cv_img;
